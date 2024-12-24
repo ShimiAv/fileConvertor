@@ -1,5 +1,4 @@
 import os
-import time
 import PyPDF2
 import pandas
 import pptx
@@ -8,7 +7,7 @@ from docx import Document
 from dotenv import load_dotenv
 
 
-def main_process():
+def main_process(keyword):
     load_dotenv("data.env")
     DB_HOST = os.getenv("DB_HOST")
     DB_USER = os.getenv("DB_USER")
@@ -25,21 +24,20 @@ def main_process():
 
         )
         cursor = connection.cursor()
-
-        while True:
-            cursor.execute('SELECT id, path, keyword FROM search_table')
-            records = cursor.fetchall()
-
-            for record in records:
-                print(record)
-                return isExist(record[1], record[2])
+        cursor.execute('SELECT id, url FROM files')
+        records = cursor.fetchall()
+        exists = []
+        for record in records:
+            print(record)
+            if isExist(record[1], keyword):
+                exists.append(record[0])
+        return exists
 
     except sql.MySQLError as db_error:
         print(f"Database error occurred: {str(db_error)}")
     except Exception as e:
         print(f"Error occurred: {str(e)}")
 
-        time.sleep(1)
 
 
 def isExist(path, keyword):
@@ -123,5 +121,3 @@ def pdf_to_reader(path):
 
     return page_texts
 
-
-main_process()
