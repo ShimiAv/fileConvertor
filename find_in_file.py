@@ -24,12 +24,12 @@ def main_process(keyword):
 
         )
         cursor = connection.cursor()
-        cursor.execute('SELECT id, url FROM files')
+        cursor.execute('SELECT id, url, name FROM files')
         records = cursor.fetchall()
         exists = []
         for record in records:
             print(record)
-            if isExist(record[1], keyword):
+            if isExist(record[1] + "\\" + record[2], keyword):
                 exists.append(record[0])
         return exists
 
@@ -45,16 +45,16 @@ def isExist(path, keyword):
     match file_ending:
         case 'csv':
             data = CSV_to_reader(path)
-            return data is not None and keyword in str(data.values)
+            return data is not None and keyword in str(data.values).lower()
         case 'docx':
             text = word_to_reader(path)
-            return text and keyword in text
+            return text and keyword in text.lower()
         case 'pptx':
             text = ppt_to_reader(path)
-            return text and keyword in ' '.join(text)
+            return text and keyword in ' '.join(text).lower()
         case 'pdf':
             text = pdf_to_reader(path)
-            return text and keyword in ' '.join(text)
+            return text and keyword in ' '.join(text).lower()
         case _:
             print(f"unsupported file format: {file_ending}")
             return False
@@ -66,7 +66,7 @@ def CSV_to_reader(path):
         print(data)
         return data
     except Exception as e:
-        print(f"An error accured while reading the csv file : {e}")
+        print(f"An error occurred while reading the csv file : {e}")
         return None
 
 
@@ -77,7 +77,7 @@ def word_to_reader(path):
         print(text_content)
         return text_content
     except Exception as e:
-        print(f"An error accurred while reading the Word file: {e}")
+        print(f"An error occurred while reading the Word file: {e}")
         return None
 
 
@@ -99,7 +99,7 @@ def ppt_to_reader(path):
 
         return slide_texts
     except Exception as e:
-        print(f"An error acuured while reading the ppt file : {e}")
+        print(f"An error occurred while reading the ppt file : {e}")
         return None
 
 
@@ -117,7 +117,7 @@ def pdf_to_reader(path):
                 print(page_text)
 
     except Exception as e:
-        print(f"An error accurred while processing the PDF: {str(e)}")
+        print(f"An error occurred while processing the PDF: {str(e)}")
 
     return page_texts
 
