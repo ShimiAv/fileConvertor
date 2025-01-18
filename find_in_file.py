@@ -5,7 +5,7 @@ import pptx
 import pymysql as sql
 from docx import Document
 from dotenv import load_dotenv
-
+#fixed path to file
 
 def main_process(keyword):
     load_dotenv("data.env")
